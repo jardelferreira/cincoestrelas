@@ -1,0 +1,30 @@
+[
+    {
+        "nome": "Domingos e Feriados",
+        "descricao": "Taxa adicional para viagens em domingos e feriados",
+        "icone": "calendar-alt",
+        "operacao": "+",
+        "valor": 10
+    },
+    {
+        "nome": "Viagem PET",
+        "descricao": "Taxa adicional para transporte de animais de estimação",
+        "icone": "paw",
+        "operacao": "%",
+        "valor": 50
+    },
+    {
+        "nome": "Difícil Acesso",
+        "descricao": "Taxa adicional para áreas de difícil acesso",
+        "icone": "map-marker-alt",
+        "operacao": "+",
+        "valor": 12
+    },
+    {
+        "nome": "Retorno de Praias",
+        "descricao": "Retorno de Praias após a viagem",
+        "icone": "umbrella-beach",
+        "operacao": "+",
+        "valor": 10
+    }
+]
