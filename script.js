@@ -6,7 +6,8 @@
 
 // ===== CONFIGURAÇÕES E CONSTANTES =====
 const CONFIG = {
-    DB_NAME: "mobilidadeDB",
+    APP_NAME: "cincoestrelas",
+    DB_NAME: "cincoestrelas_mobilidadeDB",
     DB_VERSION: 2,
     STORES: {
         LOCALIDADES: "localidades",
@@ -14,10 +15,10 @@ const CONFIG = {
         META: "metadados"
     },
     URLS: {
-        LOCAL_JSON: "https://cdn.jsdelivr.net/gh/jardelferreira/gfv@main/localidades.json",
-        LOCAL_ROTAS: "https://cdn.jsdelivr.net/gh/jardelferreira/gfv@main/rotas_editadas_3.json",
-        REMOTE_CSV: "https://script.google.com/macros/s/AKfycbzXuUIkcbuM9ryesRTg5ofVtSQFFLAr31QTUjDW0JPYSFd15TVPhKhk0omwsGfcNpHo/exec",
-        ADICIONAIS: "https://cdn.jsdelivr.net/gh/jardelferreira/gfv@main/adicionais.json"
+        LOCAL_JSON: `https://cdn.jsdelivr.net/gh/jardelferreira/${CONFIG.APP_NAME}@main/localidades.json`,
+        LOCAL_ROTAS: `https://cdn.jsdelivr.net/gh/jardelferreira/${CONFIG.APP_NAME}@main/rotas_editadas_3.json`,
+        REMOTE_CSV: `https://script.google.com/macros/s/AKfycbzXuUIkcbuM9ryesRTg5ofVtSQFFLAr31QTUjDW0JPYSFd15TVPhKhk0omwsGfcNpHo/exec`,
+        ADICIONAIS: `https://cdn.jsdelivr.net/gh/jardelferreira/${CONFIG.APP_NAME}@main/adicionais.jso`
     },
     CACHE_HOURS: 24,
     TOAST_DURATION: 4000,
@@ -116,7 +117,7 @@ class Utils {
 // ===== GERENCIADOR DE TEMAS =====
 class ThemeManager {
     constructor() {
-        this.storageKey = 'mobilidade-theme';
+        this.storageKey = `${CONFIG.APP_NAME}-mobilidade-theme`;
         this.defaultTheme = 'default';
         this.availableThemes = ['default', 'dark', 'blue', 'green', 'purple', 'orange', 'red', 'pink', 'yellow', 'gray'];
     }
