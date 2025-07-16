@@ -108,6 +108,12 @@
     --primary-light: #FCD34D;
 }
 
+.theme-orange2{
+    --primary-color: #EC2C04;
+    --primary-dark: #E04000;
+    --primary-light: #F5A623;
+}
+
 .theme-yellow {
     --primary-color: #FFC107;
     --primary-dark: #E67E22;
