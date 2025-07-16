@@ -120,7 +120,7 @@ class ThemeManager {
     constructor() {
         this.storageKey = `${CONFIG.APP_NAME}-mobilidade-theme`;
         this.defaultTheme = 'default';
-        this.availableThemes = ['default', 'dark', 'blue', 'green', 'purple', 'orange', 'red', 'pink', 'yellow', 'gray'];
+        this.availableThemes = ['default', 'orange2', 'blue', 'green', 'purple', 'orange', 'red', 'pink', 'yellow', 'gray'];
     }
 
     // Salvar tema no localStorage
