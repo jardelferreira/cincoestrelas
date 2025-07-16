@@ -5,8 +5,9 @@
  */
 
 // ===== CONFIGURAÇÕES E CONSTANTES =====
+const APP_NAME = "cincoestrelas";
 const CONFIG = {
-    APP_NAME: "cincoestrelas",
+    APP_NAME: APP_NAME,
     DB_NAME: "cincoestrelas_mobilidadeDB",
     DB_VERSION: 2,
     STORES: {
@@ -15,10 +16,10 @@ const CONFIG = {
         META: "metadados"
     },
     URLS: {
-        LOCAL_JSON: `https://cdn.jsdelivr.net/gh/jardelferreira/${CONFIG.APP_NAME}@main/localidades.json`,
-        LOCAL_ROTAS: `https://cdn.jsdelivr.net/gh/jardelferreira/${CONFIG.APP_NAME}@main/rotas_editadas_3.json`,
+        LOCAL_JSON: `https://cdn.jsdelivr.net/gh/jardelferreira/${APP_NAME}@main/localidades.json`,
+        LOCAL_ROTAS: `https://cdn.jsdelivr.net/gh/jardelferreira/${APP_NAME}@main/rotas_editadas_3.json`,
         REMOTE_CSV: `https://script.google.com/macros/s/AKfycbzXuUIkcbuM9ryesRTg5ofVtSQFFLAr31QTUjDW0JPYSFd15TVPhKhk0omwsGfcNpHo/exec`,
-        ADICIONAIS: `https://cdn.jsdelivr.net/gh/jardelferreira/${CONFIG.APP_NAME}@main/adicionais.jso`
+        ADICIONAIS: `https://cdn.jsdelivr.net/gh/jardelferreira/${APP_NAME}@main/adicionais.jso`
     },
     CACHE_HOURS: 24,
     TOAST_DURATION: 4000,
