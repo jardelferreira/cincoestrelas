@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciador de Localidades e Rotas</title>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 0; }
+    .tabs { display: flex; justify-content: center; background: #2c3e50; }
+    .tab { padding: 15px 30px; cursor: pointer; color: white; border-bottom: 3px solid transparent; }
+    .tab.active { border-bottom: 3px solid #1abc9c; background: #34495e; }
+    .container { padding: 20px; }
+    .hidden { display: none; }
+    table { width: 100%; }
+    button { padding: 6px 12px; margin: 10px 5px 0 0; }
+    .actions { display: flex; gap: 5px; justify-content: center; }
+    input[type="text"], input[type="number"] { width: 100%; }
+  </style>
+</head>
+<body>
+
+<div class="tabs">
+  <div class="tab active" data-tab="localidades">Localidades</div>
+  <div class="tab" data-tab="rotas">Rotas</div>
+</div>
+
+<div class="container">
+  <div id="localidades" class="tab-content">
+    <h2>Gerenciar Localidades</h2>
+    <table id="tabelaLocalidades" class="display"></table>
+    <button onclick="adicionarLocalidade()">Adicionar Localidade</button>
+    <button onclick="baixarLocalidades()">Baixar JSON</button>
+  </div>
+  <div id="rotas" class="tab-content hidden">
+    <h2>Gerenciar Rotas</h2>
+    <table id="tabelaRotas" class="display"></table>
+    <button onclick="baixarRotas()">Baixar JSON</button>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script>
+  let localidades = [
+    { id: 1, local: 'Centro', bairro: 'Centro', cidade: 'Maceió', uf: 'AL' }
+  ];
+  let rotas = {
+    1: { rotas: { 1: { valor: 10, reverse: true } } }
+  };
+
+  let idCounter = localidades.length;
+
+  $(document).ready(function () {
+    atualizarTabelaLocalidades();
+    atualizarTabelaRotas();
+
+    $('.tab').click(function () {
+      $('.tab').removeClass('active');
+      $(this).addClass('active');
+      const tabId = $(this).data('tab');
+      $('.tab-content').addClass('hidden');
+      $('#' + tabId).removeClass('hidden');
+    });
+  });
+
+  function atualizarTabelaLocalidades() {
+    if ($.fn.DataTable.isDataTable('#tabelaLocalidades')) {
+      $('#tabelaLocalidades').DataTable().destroy();
+    }
+
+    const data = localidades.map(loc => [
+      loc.id,
+      `<input type='text' value='${loc.local}' onchange='editarCampo(${loc.id}, "local", this.value)'/>`,
+      `<input type='text' value='${loc.bairro}' onchange='editarCampo(${loc.id}, "bairro", this.value)'/>`,
+      `<input type='text' value='${loc.cidade}' onchange='editarCampo(${loc.id}, "cidade", this.value)'/>`,
+      `<input type='text' value='${loc.uf}' onchange='editarCampo(${loc.id}, "uf", this.value)'/>`,
+      `<button onclick='removerLocalidade(${loc.id})'>Remover</button>`
+    ]);
+
+    $('#tabelaLocalidades').DataTable({
+      data: data,
+      columns: [
+        { title: 'ID' },
+        { title: 'Local' },
+        { title: 'Bairro' },
+        { title: 'Cidade' },
+        { title: 'UF' },
+        { title: 'Ações' }
+      ]
+    });
+  }
+
+  function atualizarTabelaRotas() {
+    if ($.fn.DataTable.isDataTable('#tabelaRotas')) {
+      $('#tabelaRotas').DataTable().destroy();
+    }
+
+    let data = [];
+    localidades.forEach(origem => {
+      localidades.forEach(destino => {
+        if (!rotas[origem.id]) rotas[origem.id] = { rotas: {} };
+        if (!rotas[origem.id].rotas[destino.id]) {
+          rotas[origem.id].rotas[destino.id] = { valor: 0, reverse: false };
+        }
+        let rota = rotas[origem.id].rotas[destino.id];
+        data.push([
+          `${origem.local}`,
+          `${destino.local}`,
+          `<input type='number' value='${rota.valor}' onchange='editarRota(${origem.id}, ${destino.id}, "valor", this.value)' />`,
+          `<input type='checkbox' ${rota.reverse ? 'checked' : ''} onchange='editarRota(${origem.id}, ${destino.id}, "reverse", this.checked)' />`
+        ]);
+      });
+    });
+
+    $('#tabelaRotas').DataTable({
+      data: data,
+      columns: [
+        { title: 'Origem' },
+        { title: 'Destino' },
+        { title: 'Valor' },
+        { title: 'Reverse' }
+      ]
+    });
+  }
+
+  function editarCampo(id, campo, valor) {
+    const local = localidades.find(l => l.id === id);
+    if (local) local[campo] = valor;
+  }
+
+  function editarRota(origemId, destinoId, campo, valor) {
+    if (!rotas[origemId]) rotas[origemId] = { rotas: {} };
+    if (!rotas[origemId].rotas[destinoId]) rotas[origemId].rotas[destinoId] = { valor: 0, reverse: false };
+    rotas[origemId].rotas[destinoId][campo] = campo === 'valor' ? Number(valor) : Boolean(valor);
+  }
+
+  function adicionarLocalidade() {
+    idCounter++;
+    localidades.push({ id: idCounter, local: '', bairro: '', cidade: '', uf: '' });
+    atualizarTabelaLocalidades();
+    atualizarTabelaRotas();
+  }
+
+  function removerLocalidade(id) {
+    localidades = localidades.filter(l => l.id !== id);
+    delete rotas[id];
+    for (const origem in rotas) {
+      delete rotas[origem].rotas[id];
+    }
+    atualizarTabelaLocalidades();
+    atualizarTabelaRotas();
+  }
+
+  function baixarLocalidades() {
+    const json = JSON.stringify(localidades);
+    baixarArquivo(json, 'localidades.json');
+  }
+
+  function baixarRotas() {
+    const json = JSON.stringify(rotas);
+    baixarArquivo(json, 'rotas.json');
+  }
+
+  function baixarArquivo(conteudo, nome) {
+    const blob = new Blob([conteudo], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nome;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>
+</body>
+</html>

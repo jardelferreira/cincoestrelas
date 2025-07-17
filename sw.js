@@ -1,5 +1,7 @@
 const CACHE_NAME = "pwa-tabela-v1";
 const urlsToCache = [
+  "https://jardelferreira.github.io/cincoestrelas/",
+  "https://jardelferreira.github.io/cincoestrelas/index.html",
   "https://jardelferreira.github.io/cincoestrelas/manifest.json",
   "https://jardelferreira.github.io/cincoestrelas/icon-192.png",
   "https://jardelferreira.github.io/cincoestrelas/icon-512.png",
