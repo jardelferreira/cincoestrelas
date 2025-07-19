@@ -3,7 +3,7 @@
   "short_name": "5 Estrelas",
   "version": "2.0",
   "description": "Calculadora de Viagens cinco estrelas",
-  "start_url": "https://jardelferreira.github.io/cincoestrelas/",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#EC2C04",
