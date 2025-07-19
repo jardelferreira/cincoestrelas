@@ -12,15 +12,7 @@ const urlsToCache = [
     `https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/spinner.png`,
     `https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/operacoes.js`,
     `https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/script.js`,
-    `https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/webfonts/fa-brands-400.ttf`,
-    `https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/webfonts/fa-brands-400.woff2`,
-    `https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/webfonts/fa-regular-400.ttf`,
-    `https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/webfonts/fa-regular-400.woff2`,
-    `https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/webfonts/fa-solid-900.ttf`,
-    `https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/webfonts/fa-solid-900.woff2`,
-    `https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/webfonts/fa-v4compatibility.ttf`,
-    `https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/webfonts/fa-v4compatibility.woff2`,
-    'https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/src/output.css',
+    'https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/src/output.css'
 
 ];
 
