@@ -383,7 +383,8 @@ class DataManager {
     async carregarAdicionais() {
         try {
             const response = await this.fetchWithRetry(CONFIG.URLS.ADICIONAIS);
-            ADICIONAIS = await response.json();
+            const adicionais = await response.json();
+            ADICIONAIS = adicionais.data
             console.log("✅ ADICIONAIS carregados");
         } catch (error) {
             console.warn("⚠️ Erro ao carregar adicionais:", error);
