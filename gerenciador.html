@@ -14,6 +14,11 @@
 </head>
 
 <body>
+    <script>
+         if(localStorage.getItem('logado') != 'true') {
+             location.href = "/login.html";
+         }
+    </script>
     <div class="app-container">
         <div class="header">
             <h1>Gerenciador Avançado</h1>
@@ -249,7 +254,7 @@
             window.LOCALIDADES = await fetch(`https://script.google.com/macros/s/AKfycbz5Cj8mcYEfHtrGwER4xZEVT_xDe7ov4sth7m3hgaB30-6n-9DqcuZZW5UZyPW1pRhc/exec?action=localidades`).then(response => response.json());
             window.LOCALIDADES = window.LOCALIDADES.filter(l => l.ID != "")
             window.ROTAS = await fetch(`https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/rotas_1907.txt`).then(response => response.json());
-            window.ADICIONAIS = await fetch(`https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/adicionais_1752953694777.json`).then(response => response.json());
+            window.ADICIONAIS = await fetch(`https://script.google.com/macros/s/AKfycbz5Cj8mcYEfHtrGwER4xZEVT_xDe7ov4sth7m3hgaB30-6n-9DqcuZZW5UZyPW1pRhc/exec?action=getAdicionais&nocache=${Date.now()}`).then(response => response.json()).data;
             window.rotasLista = [];
             ROTAS.forEach(function (rotas) {
                 if (typeof rotas.rotas === 'object') {
