@@ -652,7 +652,7 @@
             const valor = parseFloat(document.getElementById(`${origem}-${destino}-valor`).value);
             const reverse = Boolean(document.getElementById(`${origem}-${destino}-reverse`).checked);
             window.ROTAS.find(rotas => rotas.id == origem).rotas[destino] = { value: valor, reverse: reverse }
-            atualizarPorOrigemDestino(destino, origem,{ value: valor, reverse: reverse });
+            atualizarPorOrigemDestino(destino, origem,{ valor: valor, reverse: reverse });
             ocultarElemento(`salve-${origem}-${destino}`);
         }
 
