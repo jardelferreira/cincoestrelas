@@ -15,15 +15,20 @@
 
 <body>
     <script>
-         if(localStorage.getItem('logado') != 'true') {
-             location.href = "/cincoestrelas/login.html";
-         }
+        if (localStorage.getItem('logado') != 'true') {
+            location.href = "/cincoestrelas/login.html";
+        }
     </script>
     <div class="app-container">
         <div class="header">
-            <h1>Gerenciador Avançado</h1>
-            <p>Sistema de gestão de localidades e rotas</p>
-            <button class="btn btn-primary" onclick="logout()">Sair</button>
+            <div style="display: inline-block; width: 90%;">
+                <div style="display: block;">
+                    <h1>Gerenciador Avançado</h1>
+                    <p>Sistema de gestão de localidades e rotas</p>
+                </div>
+                <button class="btn btn-danger" onclick="logout()">Sair</button>
+                <button class="btn btn-primary" onclick="limparTudoERecarregar()">Recarregar</button>
+            </div>
         </div>
 
         <div class="tabs-container">
@@ -44,9 +49,12 @@
                 <button class="tab" data-tab="relatorios">
                     📊 Relatórios
                 </button>
-                <a id="registrar_link" target="_blank" style="margin-top: 20px; margin-bottom: 20px; color: #fff; text-decoration: none; font-size: 1.2rem; font-weight: bold; cursor: pointer; ">Registrar </a>
+                <a id="registrar_link" target="_blank"
+                    style="margin-top: 20px; margin-bottom: 20px; color: #fff; text-decoration: none; font-size: 1.2rem; font-weight: bold; cursor: pointer; ">Registrar
+                </a>
                 <a id="senha_link" target="_blank" href="/keygen.html"
-                style="margin-top: 20px; margin-left: 20px; margin-bottom: 20px; color: #fff; text-decoration: none; font-size: 1.2rem; font-weight: bold; cursor: pointer; ">Gerar senha </a>
+                    style="margin-top: 20px; margin-left: 20px; margin-bottom: 20px; color: #fff; text-decoration: none; font-size: 1.2rem; font-weight: bold; cursor: pointer; ">Gerar
+                    senha </a>
             </div>
             <div class="tab-indicator" id="tabIndicator"></div>
         </div>
@@ -785,11 +793,37 @@
             });
         }
 
-        function logout(){
+        function logout() {
             localStorage.clear()
             sessionStorage.clear()
         }
-        
+        async function limparTudoERecarregar() {
+            try {
+                // 🧹 Limpa localStorage
+                localStorage.clear();
+
+                // 🧹 Limpa sessionStorage
+                sessionStorage.clear();
+
+                // 🧹 Limpa todos os caches (Service Worker)
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(name => caches.delete(name)));
+                }
+
+                // 🧹 Limpa todos os bancos IndexedDB
+                if ('indexedDB' in window) {
+                    const dbs = await indexedDB.databases();
+                    await Promise.all(dbs.map(db => indexedDB.deleteDatabase(db.name)));
+                }
+
+                // 🔁 Recarrega a página, forçando update
+                window.location.reload(true); // OBS: true é ignorado nos navegadores modernos
+            } catch (err) {
+                console.error("Erro ao limpar dados:", err);
+            }
+        }
+
     </script>
 
 </body>
