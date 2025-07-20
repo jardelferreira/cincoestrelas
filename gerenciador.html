@@ -652,6 +652,7 @@
             const valor = parseFloat(document.getElementById(`${origem}-${destino}-valor`).value);
             const reverse = Boolean(document.getElementById(`${origem}-${destino}-reverse`).checked);
             window.ROTAS.find(rotas => rotas.id == origem).rotas[destino] = { value: valor, reverse: reverse }
+            atualizarPorOrigemDestino(origem,destino);
             ocultarElemento(`salve-${origem}-${destino}`);
         }
 
@@ -824,6 +825,29 @@
             }
         }
 
+        function atualizarPorOrigemDestino(origemId, destinoId) {
+
+            const indexes = tables.rotas.rows().indexes().toArray();
+            let dados = tables.rotas.rows().data().toArray().find(r => (r.origem_id == destinoId && r.destino_id == origemId))
+            const novosDados = {valor: dados.valor, reverse: dados.reverse };
+            const indexAlvo = indexes.find(index => {
+                const data = tables.rotas.row(index).data();
+                return data.origem_id == origemId && data.destino_id == destinoId;
+            });
+
+            if (indexAlvo !== undefined) {
+                const row = tables.rotas.row(indexAlvo);
+                const data = row.data();
+
+                // Mescla os dados existentes com os novos
+                Object.assign(data, novosDados);
+
+                // Atualiza a linha no DataTable
+                row.data(data).invalidate().draw(false);
+            } else {
+                console.warn("Linha não encontrada para origem_id =", origemId, "e destino_id =", destinoId);
+            }
+        }
 
     </script>
 
