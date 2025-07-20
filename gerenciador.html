@@ -254,7 +254,7 @@
                     if (now > expireDate) {
                         localStorage.removeItem('expire_at');
                         alert("Sessão expirada. Faça login novamente.");
-                        location.href = "/login.html";
+                        location.href = "/cincoestrelas/login.html";
                     }
                 }
             }, 60000); // Verifica a cada 60 segundos
@@ -292,7 +292,7 @@
 
             // Inicializar DataTables
             window.tables = {
-                localidades: $('#tabelaRotas').DataTable({
+                rotas: $('#tabelaRotas').DataTable({
                     ...tableConfig,
                     data: rotasLista,
                     responsive: true,
@@ -391,7 +391,7 @@
                     }
                 }),
 
-                rotas: $('#tabelaLocalidades').DataTable({
+                localidades: $('#tabelaLocalidades').DataTable({
                     ...tableConfig,
                     data: LOCALIDADES,
                     responsive: true,
@@ -823,6 +823,7 @@
                 console.error("Erro ao limpar dados:", err);
             }
         }
+
 
     </script>
 
