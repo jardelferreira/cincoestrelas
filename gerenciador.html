@@ -652,7 +652,7 @@
             const valor = parseFloat(document.getElementById(`${origem}-${destino}-valor`).value);
             const reverse = Boolean(document.getElementById(`${origem}-${destino}-reverse`).checked);
             window.ROTAS.find(rotas => rotas.id == origem).rotas[destino] = { value: valor, reverse: reverse }
-            atualizarPorOrigemDestino(origem,destino);
+            atualizarPorOrigemDestino(destino, origem,{ value: valor, reverse: reverse });
             ocultarElemento(`salve-${origem}-${destino}`);
         }
 
@@ -825,18 +825,18 @@
             }
         }
 
-        function atualizarPorOrigemDestino(origemId, destinoId) {
+        function atualizarPorOrigemDestino(origemId, destinoId, novosDados) {
+            const table = $('#tabelaRotas').DataTable(); // seu ID de tabela
 
-            const indexes = tables.rotas.rows().indexes().toArray();
-            let dados = tables.rotas.rows().data().toArray().find(r => (r.origem_id == origemId && r.destino_id == destinoId))
-            const novosDados = {valor: dados.valor, reverse: dados.reverse };
+            const indexes = table.rows().indexes().toArray();
+
             const indexAlvo = indexes.find(index => {
-                const data = tables.rotas.row(index).data();
+                const data = table.row(index).data();
                 return data.origem_id == origemId && data.destino_id == destinoId;
             });
 
             if (indexAlvo !== undefined) {
-                const row = tables.rotas.row(indexAlvo);
+                const row = table.row(indexAlvo);
                 const data = row.data();
 
                 // Mescla os dados existentes com os novos
@@ -844,12 +844,10 @@
 
                 // Atualiza a linha no DataTable
                 row.data(data).invalidate().draw(false);
-                console.log("Atualizando inverso")
             } else {
                 console.warn("Linha não encontrada para origem_id =", origemId, "e destino_id =", destinoId);
             }
         }
-
     </script>
 
 </body>
