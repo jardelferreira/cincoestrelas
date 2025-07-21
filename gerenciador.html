@@ -270,9 +270,9 @@
                     for (let rota in rotas.r) {
 
                         window.rotasLista.push({
-                            origem_id: rotas.id,
+                            origem_id: rotas[0],
                             destino_id: rota,
-                            origem: enderecoLocalidade(LOCALIDADES.find(l => l.ID == rotas.id)),
+                            origem: enderecoLocalidade(LOCALIDADES.find(l => l.ID == rotas[0])),
                             destino: enderecoLocalidade(LOCALIDADES.find(l => l.ID == rota)),
                             valor: rotas.r[rota][1],
                             reverse: !!rotas.r[rota][2]
