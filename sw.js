@@ -11,7 +11,7 @@ const urlsToCache = [
   'https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/spinner.png',
   'https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/operacoes.js',
   'https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/script.js',
-  'https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/src/output.css'
+  'https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/src/output.css',
 ];
 
 // INSTALAÇÃO — cache dos arquivos essenciais

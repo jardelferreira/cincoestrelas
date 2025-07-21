@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerador de Rotas</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+  <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-5xl space-y-4">
+    <h1 class="text-2xl font-bold text-gray-800">Gerador de JSON de Rotas</h1>
+
+    <!-- Feedback de carregamento -->
+    <div id="loading" class="flex items-center gap-2 text-blue-600 font-medium">
+      <svg class="animate-spin h-5 w-5 text-blue-600" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+      </svg>
+      Carregando dados...
+    </div>
+
+    <!-- Botões -->
+    <div class="flex flex-wrap gap-3">
+      <button onclick="baixarJSON(event,'localidades')" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+        Baixar Localidades
+      </button>
+      <button onclick="baixarJSON(event,'rotas')" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition">
+        Baixar Rotas
+      </button>
+    </div>
+
+    <!-- Área de saída -->
+    <pre id="output" class="bg-gray-100 p-4 rounded max-h-96 overflow-auto text-sm whitespace-pre-wrap break-words"></pre>
+
+    <!-- Toast de status -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg hidden"></div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      try {
+        const loading = document.getElementById("loading");
+        showLoading(true);
+
+        window.localidades = await fetch(`https://script.google.com/macros/s/AKfycbz5Cj8mcYEfHtrGwER4xZEVT_xDe7ov4sth7m3hgaB30-6n-9DqcuZZW5UZyPW1pRhc/exec?action=localidades`)
+          .then(response => response.json());
+
+        window.rotas = await gerarRotas(window.localidades);
+
+        document.getElementById("output").textContent = JSON.stringify(window.rotas, null, 2);
+        showLoading(false);
+        showToast("Rotas geradas com sucesso!");
+      } catch (err) {
+        showLoading(false);
+        showToast("Erro ao carregar dados!", true);
+        console.error(err);
+      }
+    });
+
+    async function gerarRotas(localidades) {
+      return localidades.map(localidade => ({
+        i: localidade.ID,
+        r: localidades.map(local => [local.ID, 0, 1])
+      }));
+    }
+
+    function baixarJSON(event, type) {
+      event.stopPropagation();
+      const obj = type === 'localidades' ? window.localidades : window.rotas;
+
+      if (!obj || obj.length === 0) {
+        showToast(`Nenhum dado disponível para ${type}`, true);
+        return;
+      }
+
+      const compactado = JSON.stringify(obj);
+      const blob = new Blob([compactado], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      const time = new Date().getTime();
+      link.download = `${type}_${time}.json`;
+      link.click();
+
+      showToast(`Arquivo ${type} baixado com sucesso!`);
+    }
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded shadow-lg text-white transition ${
+        isError ? 'bg-red-600' : 'bg-green-600'
+      }`;
+      toast.classList.remove("hidden");
+
+      setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 3000);
+    }
+
+    function showLoading(show) {
+      document.getElementById("loading").style.display = show ? 'flex' : 'none';
+    }
+  </script>
+</body>
+</html>

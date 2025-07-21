@@ -261,21 +261,21 @@
             // Configuração das DataTables
             window.LOCALIDADES = await fetch(`https://script.google.com/macros/s/AKfycbz5Cj8mcYEfHtrGwER4xZEVT_xDe7ov4sth7m3hgaB30-6n-9DqcuZZW5UZyPW1pRhc/exec?action=localidades`).then(response => response.json());
             window.LOCALIDADES = window.LOCALIDADES.filter(l => l.ID != "")
-            window.ROTAS = await fetch(`https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/rotas_1752970320567.txt`).then(response => response.json());
+            window.ROTAS = await fetch(`https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/rotas.json`).then(response => response.json());
             add = await fetch(`https://script.google.com/macros/s/AKfycbz5Cj8mcYEfHtrGwER4xZEVT_xDe7ov4sth7m3hgaB30-6n-9DqcuZZW5UZyPW1pRhc/exec?action=getAdicionais&nocache=${Date.now()}`).then(response => response.json());
             window.ADICIONAIS = JSON.parse(add.data);
             window.rotasLista = [];
             ROTAS.forEach(function (rotas) {
-                if (typeof rotas.rotas === 'object') {
-                    for (let rota in rotas.rotas) {
+                if (typeof rotas.r === 'object') {
+                    for (let rota in rotas.r) {
 
                         window.rotasLista.push({
                             origem_id: rotas.id,
                             destino_id: rota,
                             origem: enderecoLocalidade(LOCALIDADES.find(l => l.ID == rotas.id)),
                             destino: enderecoLocalidade(LOCALIDADES.find(l => l.ID == rota)),
-                            valor: rotas.rotas[rota].value,
-                            reverse: rotas.rotas[rota].reverse
+                            valor: rotas.r[rota][1],
+                            reverse: !!rotas.r[rota][2]
                         });
                     }
                 }
@@ -380,8 +380,16 @@
                                     }
                                 },
                                 {
-                                    text: "Baixar Rotas",
+                                    text: "PDF",
+                                    extend: "pdf",
                                     className: "btn btn-primary",
+                                    exportOptions: {
+                                        columns: [0, 1, 2]
+                                    }
+                                },
+                                {
+                                    text: "Baixar Rotas",
+                                    className: "btn btn-success",
                                     action: function () {
                                         baixarRotasJSON();
                                     }
@@ -452,7 +460,7 @@
                                 },
                                 {
                                     text: 'Baixar Adicionais',
-                                    className: "btn btn-primary",
+                                    className: "btn btn-success",
                                     exportOptions: {
                                         columns: [0, 1, 2, 4]
                                     },
@@ -651,8 +659,9 @@
         function atualizarRota(origem, destino) {
             const valor = parseFloat(document.getElementById(`${origem}-${destino}-valor`).value);
             const reverse = Boolean(document.getElementById(`${origem}-${destino}-reverse`).checked);
-            window.ROTAS.find(rotas => rotas.id == origem).rotas[destino] = { value: valor, reverse: reverse }
-            atualizarPorOrigemDestino(destino, origem,{ valor: valor, reverse: reverse });
+            window.ROTAS.find(rotas => rotas.id == origem).rotas[destino] = { v: valor, r: reverse }
+            const novosDados = reverse ? { v: valor, r: reverse } : {r:reverse}
+            atualizarPorOrigemDestino(destino, origem,novosDados);
             ocultarElemento(`salve-${origem}-${destino}`);
         }
 
