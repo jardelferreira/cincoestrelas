@@ -266,20 +266,20 @@
             window.ADICIONAIS = JSON.parse(add.data);
             window.rotasLista = [];
             ROTAS.forEach(function (rotas) {
-                if (typeof rotas.r === 'object') {
-                    for (let rota in rotas.r) {
-
+                if (Array.isArray(rotas.r)) {
+                    rotas.r.forEach(function (destinoRota) {
                         window.rotasLista.push({
-                            origem_id: rotas[0],
-                            destino_id: rota,
-                            origem: enderecoLocalidade(LOCALIDADES.find(l => l.ID == rotas[0])),
-                            destino: enderecoLocalidade(LOCALIDADES.find(l => l.ID == rota)),
-                            valor: rotas.r[rota][1],
-                            reverse: !!rotas.r[rota][2]
+                            origem_id: rotas.i,
+                            destino_id: destinoRota[0],
+                            origem: enderecoLocalidade(LOCALIDADES.find(l => l.ID == rotas.i)),
+                            destino: enderecoLocalidade(LOCALIDADES.find(l => l.ID == destinoRota[0])),
+                            valor: destinoRota[1],
+                            reverse: !!destinoRota[2]
                         });
-                    }
+                    });
                 }
             });
+
             const dtLanguage = await fetch(`https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/datatable_pt-BR.json`).then(response => response.json());
 
             const tableConfig = {
@@ -660,8 +660,8 @@
             const valor = parseFloat(document.getElementById(`${origem}-${destino}-valor`).value);
             const reverse = Boolean(document.getElementById(`${origem}-${destino}-reverse`).checked);
             window.ROTAS.find(rotas => rotas.id == origem).rotas[destino] = { v: valor, r: reverse }
-            const novosDados = reverse ? { v: valor, r: reverse } : {r:reverse}
-            atualizarPorOrigemDestino(destino, origem,novosDados);
+            const novosDados = reverse ? { v: valor, r: reverse } : { r: reverse }
+            atualizarPorOrigemDestino(destino, origem, novosDados);
             ocultarElemento(`salve-${origem}-${destino}`);
         }
 
