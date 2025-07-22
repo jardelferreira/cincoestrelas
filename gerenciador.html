@@ -244,7 +244,7 @@
     <script>
         $(document).ready(async function () {
             let expire = new Date(localStorage.getItem('expire_at'));
-
+            localStorage.setItem('expire_at', expire.toISOString());
             document.getElementById('registrar_link').href = `/register.html?invite_id=123456&expire_at=${expire.toISOString()}`;
             setInterval(() => {
                 expire = localStorage.getItem('expire_at');
@@ -273,8 +273,8 @@
                             destino_id: destinoRota[0],
                             origem: enderecoLocalidade(LOCALIDADES.find(l => l.ID == rotas.i)),
                             destino: enderecoLocalidade(LOCALIDADES.find(l => l.ID == destinoRota[0])),
-                            valor: destinoRota[1],
-                            reverse: !!destinoRota[2]
+                            v: destinoRota[1],
+                            r: !!destinoRota[2]
                         });
                     });
                 }
@@ -307,7 +307,7 @@
                                 destino: 'destino_id',
                             }, render: function (data, type, row) {
                                 return `<input type="text" onchange="exibirElemento('salve-${data.origem_id}-${data.destino_id}')"
-                                class="form-control" name="${data.origem_id}-${data.destino_id}-valor" id="${data.origem_id}-${data.destino_id}-valor" value="${data.valor}"></input>`;
+                                class="form-control" name="${data.origem_id}-${data.destino_id}-valor" id="${data.origem_id}-${data.destino_id}-valor" value="${data.v}"></input>`;
                             }
                         },
                         {
@@ -316,8 +316,8 @@
                                 origem: 'origem_id',
                                 destino: 'destino_id',
                             }, render: (data, type, row) => {
-                                return `<input type="checkbox" class="form-check-input" ${data.reverse ? 'checked' : ""} onchange="exibirElemento('salve-${data.origem_id}-${data.destino_id}')"
-                                name="${data.origem_id}-${data.destino_id}-reverse" id="${data.origem_id}-${data.destino_id}-reverse" value="${data.reverse}"></input>`;
+                                return `<input type="checkbox" class="form-check-input" ${data.r ? 'checked' : ""} onchange="exibirElemento('salve-${data.origem_id}-${data.destino_id}')"
+                                name="${data.origem_id}-${data.destino_id}-reverse" id="${data.origem_id}-${data.destino_id}-reverse" value="${data.r}"></input>`;
                             }
                         },
                         {
@@ -659,7 +659,16 @@
         function atualizarRota(origem, destino) {
             const valor = parseFloat(document.getElementById(`${origem}-${destino}-valor`).value);
             const reverse = Boolean(document.getElementById(`${origem}-${destino}-reverse`).checked);
-            window.ROTAS.find(rotas => rotas.id == origem).rotas[destino] = { v: valor, r: reverse }
+            const local = window.ROTAS.find(local => local.i == origem);
+            const rota = local.r.find(rota => rota[0] == destino);
+            rota[1] = valor;
+            rota[2] = reverse;
+            if(reverse){
+                const localDestino = window.ROTAS.find(local => local.i == destino);
+                const destinoRota = localDestino.r.find(rota => rota[0] == origem)
+                destinoRota[1] = valor;
+                destinoRota[2] = reverse;
+            }
             const novosDados = reverse ? { v: valor, r: reverse } : { r: reverse }
             atualizarPorOrigemDestino(destino, origem, novosDados);
             ocultarElemento(`salve-${origem}-${destino}`);
@@ -806,6 +815,7 @@
         function logout() {
             localStorage.clear()
             sessionStorage.clear()
+            location.href = './login.html'
         }
         async function limparTudoERecarregar() {
             try {
@@ -835,17 +845,16 @@
         }
 
         function atualizarPorOrigemDestino(origemId, destinoId, novosDados) {
-            const table = $('#tabelaRotas').DataTable(); // seu ID de tabela
-
-            const indexes = table.rows().indexes().toArray();
+    
+            const indexes = tables.rotas.rows().indexes().toArray();
 
             const indexAlvo = indexes.find(index => {
-                const data = table.row(index).data();
+                const data = tables.rotas.row(index).data();
                 return data.origem_id == origemId && data.destino_id == destinoId;
             });
 
             if (indexAlvo !== undefined) {
-                const row = table.row(indexAlvo);
+                const row = tables.rotas.row(indexAlvo);
                 const data = row.data();
 
                 // Mescla os dados existentes com os novos

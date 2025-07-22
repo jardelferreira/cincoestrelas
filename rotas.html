@@ -68,7 +68,7 @@
 
     function baixarJSON(event, type) {
       event.stopPropagation();
-      const obj = type === 'localidades' ? window.localidades : window.rotas;
+      const obj = type === 'localidades' ? window.localidades : window.rotas.map(local => (local));
 
       if (!obj || obj.length === 0) {
         showToast(`Nenhum dado disponível para ${type}`, true);

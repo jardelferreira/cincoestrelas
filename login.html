@@ -92,7 +92,7 @@
 
     </script>
     <script>
-        if(sessionStorage.getItem("logado") == "true") location.href = "/gerenciador    .html";
+        if (sessionStorage.getItem("logado") == "true") location.href = "/gerenciador    .html";
         // Máscara para CPF
         document.getElementById('cpf').addEventListener('input', function (e) {
             document.getElementById("loginButton").disabled = false
@@ -185,9 +185,8 @@
                             alert('Login bem-sucedido!');
                             window.location.href = 'gerenciador.html';
                             localStorage.setItem('logado', true);
-                            const expireDate = new Date(Date.now() + 60 * 60 * 1000);
-                            localStorage.setItem('expire_at', expireDate.toISOString());
-                            localStorage.setItem('expire_at',expireDate)
+                            const expireDate = adicionarTempo("horas",4)
+                            localStorage.setItem('expire_at', expireDate)
                             localStorage.setItem("user", JSON.stringify(data.data));
                         } else {
                             alert('Senha incorreta.');
@@ -197,8 +196,21 @@
                         alert(`Erro! ${data.data}`);
                     }
                 })
-
         });
+        function adicionarTempo(unidade, quantidade, dataBase = new Date()) {
+            const msPorUnidade = {
+                minutos: 60 * 1000,
+                horas: 60 * 60 * 1000,
+                dias: 24 * 60 * 60 * 1000,
+            };
+
+            if (!msPorUnidade[unidade]) {
+                throw new Error("Unidade inválida. Use: 'minutos', 'horas' ou 'dias'.");
+            }
+
+            const novaData = new Date(dataBase.getTime() + quantidade * msPorUnidade[unidade]);
+            return novaData;
+        }
     </script>
 </body>
 
