@@ -17,7 +17,7 @@ const CONFIG = {
     },
     URLS: {
         LOCAL_JSON: `https://cdn.jsdelivr.net/gh/jardelferreira/${APP_NAME}@main/localidades.json?nocache=${Date.now()}`,
-        LOCAL_ROTAS: `https://cdn.jsdelivr.net/gh/jardelferreira/${APP_NAME}@main/rotas.json?nocache=${Date.now()}`,
+        LOCAL_ROTAS: `/novas_rotas_1753381378720.json?nocache=${Date.now()}`,
         REMOTE_CSV: `https://script.google.com/macros/s/AKfycbz5Cj8mcYEfHtrGwER4xZEVT_xDe7ov4sth7m3hgaB30-6n-9DqcuZZW5UZyPW1pRhc/exec?action=localidades`,
         ADICIONAIS: `https://script.google.com/macros/s/AKfycbz5Cj8mcYEfHtrGwER4xZEVT_xDe7ov4sth7m3hgaB30-6n-9DqcuZZW5UZyPW1pRhc/exec?action=getAdicionais&nocache=${Date.now()}`
     },
@@ -36,7 +36,7 @@ let dbInstance = null;
 class Utils {
     static padronizarLocalidades(localidades) {
         return localidades.map(loc => ({
-            id: loc.id || loc.ID,
+            i: loc.id || loc.ID,
             local: loc.local || `${loc.LOCAL}, ${loc.BAIRRO}, ${loc.CIDADE}-${loc.UF}`
         }));
     }
@@ -231,7 +231,7 @@ class DatabaseManager {
                         if (storeName === CONFIG.STORES.META) {
                             db.createObjectStore(storeName);
                         } else {
-                            db.createObjectStore(storeName, { keyPath: "id" });
+                            db.createObjectStore(storeName, { keyPath: "i" });
                         }
                     }
                 });
@@ -354,8 +354,8 @@ class DataManager {
             console.log("🟡 Atualizando LOCALIDADES (expirado ou inexistente)");
             const response = await this.fetchWithRetry(CONFIG.URLS.REMOTE_CSV);
             const dados = await response.json();
-            const localidades = Utils.padronizarLocalidades(dados);
 
+            const localidades = Utils.padronizarLocalidades(dados);
             await this.db.salvarComTimestamp(CONFIG.STORES.LOCALIDADES, localidades);
             LOCALIDADES = localidades;
         } else {
@@ -371,7 +371,6 @@ class DataManager {
             console.log("🟡 Atualizando ROTAS (expirado ou inexistente)");
             const response = await this.fetchWithRetry(CONFIG.URLS.LOCAL_ROTAS);
             const rotas = await response.json();
-
             await this.db.salvarComTimestamp(CONFIG.STORES.ROTAS, rotas);
             ROTAS_EDITADAS = rotas;
         } else {
@@ -483,17 +482,17 @@ class CalculadoraViagem {
         }
 
         try {
-            const rotaOrigem = ROTAS_EDITADAS.find(rota => rota.id == origem);
+            const rotaOrigem = ROTAS_EDITADAS.find(rota => rota.i == origem);
             if (!rotaOrigem) {
                 throw new Error("Origem não encontrada");
             }
 
-            const rotaDestino = rotaOrigem.rotas[destino];
+            const rotaDestino = rotaOrigem.r[destino];
             if (!rotaDestino) {
                 throw new Error("Destino não encontrado");
             }
-
-            const valorBase = parseFloat(rotaDestino.value);
+            console.log(rotaDestino)
+            const valorBase = parseFloat(rotaDestino[1]);
             if (isNaN(valorBase) || valorBase <= 0) {
                 throw new Error("Valor inválido para esta rota");
             }
@@ -536,7 +535,7 @@ class SeletorManager {
 
         LOCALIDADES.forEach(local => {
             const option = document.createElement('option');
-            option.value = local.id;
+            option.value = local.i;
             option.textContent = local.local;
             select.appendChild(option);
         });
@@ -545,7 +544,10 @@ class SeletorManager {
         if (typeof $ !== 'undefined' && $.fn.select2) {
             $(select).select2({
                 placeholder: "Selecione a origem",
-                theme: "bootstrap-custom"
+                theme: "bootstrap-custom",
+                matcher: function (params, data) {
+                    return customMatcher(params, data);
+                }
             }).on('change', () => {
                 this.carregarDestinos(select.value);
                 this.resetarValor();
@@ -559,16 +561,17 @@ class SeletorManager {
     }
 
     carregarDestinos(origemId) {
+        console.log(origemId)
         const select = document.getElementById('destino');
         if (!select || !origemId) return;
 
         select.innerHTML = '<option value="">Selecione o destino</option>';
 
-        const rotaOrigem = ROTAS_EDITADAS.find(rota => rota.id == origemId);
+        const rotaOrigem = ROTAS_EDITADAS.find(rota => rota.i == origemId);
         if (!rotaOrigem) return;
 
-        for (const destinoId in rotaOrigem.rotas) {
-            const localidade = LOCALIDADES.find(loc => loc.id == destinoId);
+        for (const destinoId in rotaOrigem.r) {
+            const localidade = LOCALIDADES.find(loc => loc.i == destinoId);
             if (localidade) {
                 const option = document.createElement('option');
                 option.value = destinoId;
@@ -581,7 +584,10 @@ class SeletorManager {
         if (typeof $ !== 'undefined' && $.fn.select2) {
             $(select).select2({
                 placeholder: "Selecione o destino",
-                theme: "bootstrap-custom"
+                theme: "bootstrap-custom",
+                matcher: function (params, data) {
+                    return customMatcher(params, data)
+                }
             }).on('change', () => {
                 this.debouncedCalcular();
             });
@@ -609,13 +615,21 @@ class SeletorManager {
         item.className = 'flex items-center justify-between option-item';
 
         item.innerHTML = `
-            <label class="flex items-center cursor-pointer">
-                <input type="checkbox" class="checkbox-custom mr-3 optional-check" 
-                       value="${index}" data-valor="${adicional.valor}">
-                <span class="text-sm text-gray-700">${adicional.nome}</span>
-            </label>
-            <span class="text-sm text-gray-500">${adicional.valor}${adicional.operacao}</span>
-        `;
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" class="checkbox-custom mr-3 optional-check" 
+                            value="${index}" data-valor="${adicional.valor}">
+                        <span class="text-sm text-gray-700">${adicional.nome}</span>
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <button type="button" class="info-btn text-blue-600 text-lg" 
+                                title="Mais informações" 
+                                onclick="abrirModalInfo('${adicional.nome}', '${adicional.descricao.replace(/'/g, "\\'")}')">
+                            ℹ️
+                        </button>
+                        <span class="text-sm text-gray-500">${adicional.valor}${adicional.operacao}</span>
+                    </div>
+                `;
+
 
         const checkbox = item.querySelector('.optional-check');
         checkbox.addEventListener('change', () => {
@@ -794,7 +808,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         preloader.style.opacity = '0';
         setTimeout(() => preloader.remove(), 1000);
     }
-    $("#origem, #destino").on("select2:open", function() {
+    $("#origem, #destino").on("select2:open", function () {
         setTimeout(() => {
             document.getElementById("origem").scrollIntoView({ behavior: 'smooth' });
         }, 500);
@@ -860,5 +874,36 @@ window.calcularValorViagem = () => {
 
 // Função para compatibilidade com toast
 window.mostrarToast = UIManager.mostrarToast;
+
+function removerAcentos(texto) {
+    return texto
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // remove acentos
+        .toLowerCase();
+} function customMatcher(params, data) {
+    if (!params.term || params.term.trim() === '') return data;
+
+    const termo = removerAcentos(params.term);
+    const texto = removerAcentos(data.text || '');
+
+    // Divide o termo em palavras
+    const palavras = termo.split(/\s+/);
+
+    // Verifica se todas as palavras existem no texto
+    const todasEncontradas = palavras.every(palavra => texto.includes(palavra));
+
+    return todasEncontradas ? data : null;
+}
+
+function abrirModalInfo(titulo, descricao) {
+    document.getElementById('modal-titulo').textContent = titulo;
+    document.getElementById('modal-descricao').textContent = descricao;
+    document.getElementById('modal-info').classList.remove('hidden');
+}
+
+function fecharModalInfo() {
+    document.getElementById('modal-info').classList.add('hidden');
+}
+
 
 console.log("🚀 PWA Mobilidade v2.0 inicializado");

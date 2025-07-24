@@ -15,8 +15,10 @@
 
 <body>
     <script>
+        const url = window.location;
+        window.baseUrl = url.origin + url.pathname.replace(/[^\/]*$/, '');
         if (localStorage.getItem('logado') != 'true') {
-            location.href = "/cincoestrelas/login.html";
+            location.href = `${window.baseUrl}login.html`;
         }
     </script>
     <div class="app-container">
@@ -254,14 +256,15 @@
                     if (now > expireDate) {
                         localStorage.removeItem('expire_at');
                         alert("Sessão expirada. Faça login novamente.");
-                        location.href = "/cincoestrelas/login.html";
+                        location.href = `${window.baseUrl}login.html`;
                     }
                 }
             }, 60000); // Verifica a cada 60 segundos
             // Configuração das DataTables
             window.LOCALIDADES = await fetch(`https://script.google.com/macros/s/AKfycbz5Cj8mcYEfHtrGwER4xZEVT_xDe7ov4sth7m3hgaB30-6n-9DqcuZZW5UZyPW1pRhc/exec?action=localidades`).then(response => response.json());
             window.LOCALIDADES = window.LOCALIDADES.filter(l => l.ID != "")
-            window.ROTAS = await fetch(`https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main/rotas_1753233141647.json`).then(response => response.json());
+            ghUrl = 'https://cdn.jsdelivr.net/gh/jardelferreira/cincoestrelas@main'
+            window.ROTAS = await fetch(`/novas_rotas_1753381378720.json`).then(response => response.json());
             add = await fetch(`https://script.google.com/macros/s/AKfycbz5Cj8mcYEfHtrGwER4xZEVT_xDe7ov4sth7m3hgaB30-6n-9DqcuZZW5UZyPW1pRhc/exec?action=getAdicionais&nocache=${Date.now()}`).then(response => response.json());
             window.ADICIONAIS = JSON.parse(add.data);
             window.rotasLista = [];
@@ -648,7 +651,7 @@
             return true;
         }
         function enderecoLocalidade(localidade) {
-            
+
             let str = "";
             str += localidade.LOCAL + ", ";
             str += localidade.BAIRRO + ", ";
@@ -664,7 +667,7 @@
             const rota = local.r.find(rota => rota[0] == destino);
             rota[1] = valor;
             rota[2] = reverse;
-            if(reverse){
+            if (reverse) {
                 const localDestino = window.ROTAS.find(local => local.i == destino);
                 const destinoRota = localDestino.r.find(rota => rota[0] == origem)
                 destinoRota[1] = valor;
@@ -846,7 +849,7 @@
         }
 
         function atualizarPorOrigemDestino(origemId, destinoId, novosDados) {
-    
+
             const indexes = tables.rotas.rows().indexes().toArray();
 
             const indexAlvo = indexes.find(index => {

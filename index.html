@@ -14,10 +14,11 @@
 
 </head>
 <script>
-   /* if(localStorage.getItem('logado') != 'true') {
-        location.href = "/login.html";
-    }*/
+    /* if(localStorage.getItem('logado') != 'true') {
+         location.href = "/login.html";
+     }*/
 </script>
+
 <body class="bg-gray-50 theme-blue">
     <div id="preloader" style="
     position: fixed;
@@ -201,6 +202,14 @@
         </div>
     </main>
     <div id="toast" class="toast"></div>
+    <div id="modal-info" class="fixed inset-0 hidden bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-5 rounded-lg max-w-sm shadow-lg text-sm relative">
+            <h3 id="modal-titulo" class="font-semibold text-lg mb-2">Título</h3>
+            <p id="modal-descricao" class="text-gray-700">Descrição do adicional.</p>
+            <button onclick="fecharModalInfo()"
+                class="absolute top-1 right-2 text-lg text-gray-500 hover:text-black">&times;</button>
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
